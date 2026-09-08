@@ -21,7 +21,7 @@ pipeline {
                 sh '''
                     docker stop my-react-app || true
                     docker rm my-react-app || true
-                    docker run -d --name my-react-app -p 3000:80 my-react-app:latest
+                    docker run -d --name my-react-app -p 3000:3000 my-react-app:latest
                 '''
             }
         }
