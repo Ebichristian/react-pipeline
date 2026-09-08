@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     stages {
@@ -7,19 +6,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/YOUR_USERNAME/YOUR_REPO.git'
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
-        stage('Build React App') {
-            steps {
-                sh 'npm run build'
+                    url: 'https://github.com/Ebichristian/react-pipeline.git'
             }
         }
 
@@ -29,12 +16,12 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Run Container') {
             steps {
                 sh '''
-                    docker stop my-react-container || true
-                    docker rm my-react-container || true
-                    docker run -d --name my-react-container -p 8080:80 my-react-app:latest
+                    docker stop my-react-app || true
+                    docker rm my-react-app || true
+                    docker run -d --name my-react-app -p 3000:80 my-react-app:latest
                 '''
             }
         }
@@ -42,11 +29,11 @@ pipeline {
 
     post {
         success {
-            echo 'React application deployed successfully!'
+            echo 'React app deployed successfully!'
         }
 
         failure {
-            echo 'Pipeline failed!'
+            echo 'Deployment failed!'
         }
     }
 }
