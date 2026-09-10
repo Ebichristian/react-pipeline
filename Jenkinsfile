@@ -1,7 +1,9 @@
 
 pipeline {
     agent any
-
+	triggers {
+        cron('H/5 * * * *')
+    }
     stages {
 
         stage('Checkout') {
@@ -43,6 +45,30 @@ pipeline {
     		}	
 	}
 
+	stage('Deploy') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'dockerhub-creds',
+            usernameVariable: 'DOCKER_USERNAME',
+            passwordVariable: 'DOCKER_PASSWORD'
+        )]) {
+            sh '''
+                echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+                docker stop react-app-prod || true
+                docker rm react-app-prod || true
+
+                docker pull $DOCKER_USERNAME/react-pipeline:v1
+
+                docker run -d \
+                  -p 3000:3000 \
+                  --name react-app-prod \
+                  $DOCKER_USERNAME/react-pipeline:v1
+            '''
+       	        }
+    	     }
+	  }
     }
 }
+
 
